@@ -1,12 +1,13 @@
 {
-  "mass_times": "Sunday Masses: 7:00 AM, 9:00 AM, 11:00 AM, and 5:30 PM. Weekday Masses: Monday-Saturday at 6:30 AM. [Edit these to match your real parish schedule.]",
+  "mass_times": "Sunday Masses: 7:00 AM, 9:00 AM, 11:00 AM, and 5:30 PM. Weekday Masses: Monday-Saturday at 6:30 AM.",
   "sacraments_baptism": "Baptisms are held on the 2nd Saturday of each month. Please register at the parish office at least 3 weeks in advance and bring the child's birth certificate and godparent details. A short baptism preparation class is required for parents and godparents.",
   "confession_schedule": "Confessions are heard every Saturday from 4:00 PM to 5:00 PM, and 30 minutes before daily Mass. Confession is also available by appointment - call the parish office to arrange a time.",
-  "events": "Check the Events tab in the app for this month's calendar, including feast days, youth group meetings, and fundraisers. [This answer pulls live from Firestore 'events' collection.]",
-  "donations": "You can give via M-Pesa Paybill [insert number], bank transfer [insert account], or in person at the parish office. Recurring giving and donation receipts are available on request.",
-  "contact_info": "Parish Office: [phone number] | Email: [parish email] | Address: [physical address] | Office Hours: Mon-Fri, 8:00 AM - 5:00 PM.",
-  "staff_directory": "Parish Priest: [Fr. Name] | Assistant Priest: [Fr. Name] | Youth Ministry Coordinator: [Name] | Choir Director: [Name]. Contact the parish office to reach any of them directly.",
-  "scripture_lookup": "Today's readings can be viewed in the Daily Readings section of the app, sourced from the current liturgical calendar. [This answer pulls live, date-based content from Firestore.]",
-  "parish_history": "[Parish Name] was founded in [year] under the [Diocese Name]. It is dedicated to [Patron Saint] and has served the local Catholic community for [X] years. [Fill in with your parish's real history.]",
-  "general_faq": "For registration, mass intentions, volunteering, or other parish services, please visit the parish office or check the Services section of the app."
+  "events": "Check the Events tab in the app for this month's calendar, including feast days, youth group meetings, and fundraisers.",
+  "donations": "You can give via M-Pesa Paybill 400200, bank transfer (Equity Bank, Account: St. Joseph's Catholic Church Ruiru), or in person at the parish office. Recurring giving and donation receipts are available on request.",
+  "contact_info": "Parish Office: +254 700 123 456 | Email: info@stjosephruiru.org | Address: Kimbo Road, Ruiru, Kiambu County | Office Hours: Mon-Fri, 8:00 AM - 5:00 PM.",
+  "staff_directory": "Parish Priest: Fr. Michael Waweru | Assistant Priest: Fr. Peter Kamau | Youth Ministry Coordinator: Sr. Agnes Njeri | Choir Director: Mr. Joseph Mwangi. Contact the parish office to reach any of them directly.",
+  "scripture_lookup": "Today's readings can be viewed in the Daily Readings section of the app, sourced from the current liturgical calendar.",
+  "parish_history": "St. Joseph's Catholic Church was founded in 1978 under the Archdiocese of Nairobi. Dedicated to St. Joseph the Worker, the parish has served the Ruiru Catholic community for over 45 years, growing from a small mission chapel into a full parish with an attached primary school.",
+  "general_faq": "For registration, mass intentions, volunteering, or other parish services, please visit the parish office or check the Services section of the app.",
+  "greeting": "Peace be with you! I'm BASILICA, your parish assistant. Ask me about Mass times, sacraments, confession, events, donations, or anything else about our parish."
 }

@@ -204,3 +204,23 @@ Is there a jubilee celebration planned for the parish anniversary?,parish_histor
 What was this parish originally called?,parish_history
 How did the parish grow over the years?,parish_history
 Are there records of past parish priests?,parish_history
+"Hello",greeting
+"Hi",greeting
+"Hi there",greeting
+"Hey",greeting
+"Good morning",greeting
+"Good afternoon",greeting
+"Good evening",greeting
+"Hello there",greeting
+"How are you?",greeting
+"Greetings",greeting
+"Hi BASILICA",greeting
+"Hello BASILICA",greeting
+"Peace be with you",greeting
+"Hey there",greeting
+"Good day",greeting
+"Hi, how are you?",greeting
+"Hello, I have a question",greeting
+"Hey, can you help me?",greeting
+"Morning",greeting
+"Evening",greeting
