@@ -1,0 +1,12 @@
+[
+  {
+    "id": "u1",
+    "username": "admin",
+    "password_hash": "scrypt:32768:8:1$Q4AjIecTqSOYL3as$b68420dc582cdfcd2bed356b656989cdf16db5ee7be52ffa856727fe106065946588cd3d820f1aedae15e60f77e5befb73db0f243ee1393f5486ebba9dd2eb99",
+    "role": "Super Administrator",
+    "status": "Active",
+    "mfa_secret": "STJOSEPH2026",
+    "mfa_enabled": true,
+    "created_at": 1785149345.770242
+  }
+]

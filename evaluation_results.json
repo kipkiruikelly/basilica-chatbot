@@ -1,6 +1,6 @@
 {
   "best_C": 20,
-  "confidence_threshold": 0.4,
+  "confidence_threshold": 0.8,
   "validation_accuracy": 0.8387,
   "validation_f1_macro": 0.8286,
   "test_accuracy": 0.7742,

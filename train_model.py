@@ -62,7 +62,7 @@ def main():
     print(f"Test F1 (macro): {test_f1:.3f}")
     print(f"\nClassification report:\n{classification_report(y_test, test_preds)}")
 
-    CONFIDENCE_THRESHOLD = 0.40  # below this, the chatbot falls back to "contact parish office"
+    CONFIDENCE_THRESHOLD = 0.80  # below this, the chatbot falls back to "contact parish office"
 
     results = {
         "best_C": grid.best_params_["C"],

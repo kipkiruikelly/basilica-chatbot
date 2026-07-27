@@ -1,0 +1,177 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BASILICA — Parish Assistant API",
+    "description": "Standardized production-ready REST API for the BASILICA Conversational Assistant.",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Relative API path"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Check API health status",
+        "description": "Returns the status of the service, current API version, and verification parameters.",
+        "responses": {
+          "200": {
+            "description": "Service is running healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "service": { "type": "string", "example": "basilica-chatbot" },
+                    "version": { "type": "string", "example": "2.0.0" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ask": {
+      "post": {
+        "summary": "Ask the parish assistant a question",
+        "description": "Processes a user's question, performs intent classification, resolves session context, queries Firestore, or falls back to generative AI.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["question"],
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "description": "The user's query in English or Swahili",
+                    "example": "What time is Sunday Mass?"
+                  },
+                  "session_id": {
+                    "type": "string",
+                    "description": "Unique session identifier for tracking conversation history",
+                    "example": "sess_f3a2b109"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful classification or generative fallback",
+            "headers": {
+              "X-Correlation-ID": {
+                "schema": { "type": "string" },
+                "description": "UUID tracking correlation identifier for tracing logs"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "question": { "type": "string", "example": "What time is Sunday Mass?" },
+                    "session_id": { "type": "string", "example": "sess_f3a2b109" },
+                    "intent": { "type": "string", "nullable": true, "example": "mass_times" },
+                    "confidence": { "type": "number", "example": 0.95 },
+                    "answer": { "type": "string", "example": "Sunday Masses: 7:00 AM, 9:00 AM, 11:00 AM, and 5:30 PM." },
+                    "source": { "type": "string", "example": "classifier" },
+                    "is_fallback": { "type": "boolean", "example": false },
+                    "correlation_id": { "type": "string", "example": "e492b450-482d-4bf3-ae72-eb109bc4892c" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing required parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Missing 'question' field in the request body" },
+                    "correlation_id": { "type": "string", "example": "e492b450-482d-4bf3-ae72-eb109bc4892c" }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - Rate Limiting Active",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Too many requests. Please slow down and try again." },
+                    "correlation_id": { "type": "string", "example": "e492b450-482d-4bf3-ae72-eb109bc4892c" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "An internal server error occurred while processing your request" },
+                    "correlation_id": { "type": "string", "example": "e492b450-482d-4bf3-ae72-eb109bc4892c" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/session/clear": {
+      "post": {
+        "summary": "Clear conversation history for a session",
+        "description": "Removes cached memory logs for a specific session ID, preventing context carry-forward.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "session_id": {
+                    "type": "string",
+                    "example": "sess_f3a2b109"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session cleared successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Session 'sess_f3a2b109' cleared successfully" },
+                    "correlation_id": { "type": "string", "example": "e492b450-482d-4bf3-ae72-eb109bc4892c" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

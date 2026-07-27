@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BASILICA — Enterprise Parish Governance & Approval Portal</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ChartJS for advanced visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <style>
+        :root {
+            --cathedral-navy: #09132E;
+            --cathedral-navy-light: #162447;
+            --brushed-gold: #D4AF37;
+            --brushed-gold-hover: #F3E5AB;
+            --ivory: #FDFBF7;
+            --text-dark: #2F3E46;
+            --text-light: #E0E1DD;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-bg-dark: rgba(9, 19, 46, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--cathedral-navy);
+            color: var(--ivory);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        /* ----------------------------------------------------------------------
+           Authentication Screen (Glassmorphism Modal overlay)
+           ---------------------------------------------------------------------- */
+        #auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--cathedral-navy-light), var(--cathedral-navy));
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: var(--glass-bg-dark);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: var(--shadow-premium);
+            text-align: center;
+            transform: translateY(0);
+            transition: var(--transition-smooth);
+        }
+
+        .auth-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--brushed-gold);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .auth-logo i {
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: var(--brushed-gold);
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--ivory);
+            outline: none;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+        }
+
+        .input-field:focus {
+            border-color: var(--brushed-gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--brushed-gold), #B8860B);
+            color: var(--cathedral-navy);
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        /* ----------------------------------------------------------------------
+           Main Layout & Navigation Sidebar
+           ---------------------------------------------------------------------- */
+        #main-container {
+            display: flex;
+            width: 100vw;
+            min-height: 100vh;
+        }
+
+        aside {
+            width: 280px;
+            background: rgba(9, 19, 46, 0.9);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            transition: var(--transition-smooth);
+            z-index: 100;
+        }
+
+        .aside-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 25px;
+        }
+
+        .aside-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--brushed-gold);
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            color: var(--ivory);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--glass-bg);
+            color: var(--brushed-gold);
+            border-left: 4px solid var(--brushed-gold);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 20px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brushed-gold), #B8860B);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cathedral-navy);
+            font-weight: bold;
+        }
+
+        .user-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .user-info span {
+            font-size: 0.8rem;
+            color: var(--brushed-gold);
+        }
+
+        /* ----------------------------------------------------------------------
+           Workspace Header & Views
+           ---------------------------------------------------------------------- */
+        main {
+            flex-grow: 1;
+            padding: 35px;
+            overflow-y: auto;
+            max-width: calc(100vw - 280px);
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .breadcrumbs {
+            font-size: 0.9rem;
+            color: var(--brushed-gold);
+        }
+
+        .breadcrumbs span {
+            color: var(--ivory);
+            opacity: 0.6;
+        }
+
+        .view-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .view-panel.active {
+            display: block;
+        }
+
+        /* ----------------------------------------------------------------------
+           Dashboard Premium Widgets
+           ---------------------------------------------------------------------- */
+        .widget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .widget {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .widget-data h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--brushed-gold);
+            margin-bottom: 5px;
+        }
+
+        .widget-data p {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .widget-icon {
+            font-size: 2rem;
+            color: var(--brushed-gold);
+            opacity: 0.8;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 35px;
+        }
+
+        .chart-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
+            height: 350px;
+        }
+
+        /* ----------------------------------------------------------------------
+           Structured Data Tables & Content Editors
+           ---------------------------------------------------------------------- */
+        .card-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 35px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 14px;
+            border-bottom: 2px solid var(--glass-border);
+            color: var(--brushed-gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 16px 14px;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.95rem;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-draft { background: rgba(108, 117, 125, 0.15); color: #6C757D; }
+        .badge-pending { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+        .badge-approved { background: rgba(23, 162, 184, 0.15); color: #17A2B8; }
+        .badge-scheduled { background: rgba(147, 51, 234, 0.15); color: #A855F7; }
+        .badge-published { background: rgba(40, 167, 69, 0.15); color: #28A745; }
+        .badge-archived { background: rgba(220, 53, 69, 0.15); color: #DC3545; }
+
+        .btn-gold {
+            background: var(--brushed-gold);
+            color: var(--cathedral-navy);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-gold:hover {
+            background: var(--brushed-gold-hover);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* ----------------------------------------------------------------------
+           Preview Simulator Pane
+           ---------------------------------------------------------------------- */
+        .preview-sandbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .chat-phone-mockup {
+            background: #000;
+            border: 8px solid #333;
+            border-radius: 36px;
+            height: 550px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow-premium);
+        }
+
+        .chat-mockup-header {
+            background: var(--cathedral-navy-light);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .chat-mockup-body {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #0A0D1A;
+        }
+
+        .chat-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 80%;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .bubble-user {
+            background: var(--brushed-gold);
+            color: var(--cathedral-navy);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble-bot {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--ivory);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Notifications Alert */
+        .notif-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--brushed-gold);
+        }
+
+        .notif-count {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: #EF4444;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        /* ----------------------------------------------------------------------
+           Modal Styling
+           ---------------------------------------------------------------------- */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 19, 46, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--cathedral-navy-light);
+            border: 1px solid var(--brushed-gold);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 750px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 35px;
+            box-shadow: var(--shadow-premium);
+        }
+
+        /* Comments discussion thread */
+        .comment-thread {
+            border-top: 1px solid var(--glass-border);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .comment-bubble {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Administrative Portal Authentication Gateway -->
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="fa-solid fa-church"></i>
+                BASILICA
+                <span style="font-size: 0.9rem; font-family: 'Outfit'; font-weight: 400; color: var(--ivory); letter-spacing: 3px; margin-top: 5px;">ENTERPRISE GOVERNANCE PORTAL</span>
+            </div>
+            
+            <div id="login-fields">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="input-field" placeholder="Enter administrator username">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="••••••••">
+                </div>
+                <p id="auth-error" style="color: #FF6B6B; font-size: 0.9rem; margin-bottom: 15px; display: none;"></p>
+                <button class="auth-btn" id="login-btn">Secure Login <i class="fa-solid fa-shield-halved"></i></button>
+            </div>
+
+            <!-- Multi-Factor Verification Interface -->
+            <div id="mfa-fields" style="display: none;">
+                <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--brushed-gold);">Multi-Factor Authentication (MFA) Required</p>
+                <div class="input-group">
+                    <label for="mfa-code">Verification Code</label>
+                    <input type="text" id="mfa-code" class="input-field" placeholder="123456" style="letter-spacing: 5px; text-align: center; font-size: 1.4rem;">
+                </div>
+                <p id="mfa-error" style="color: #FF6B6B; font-size: 0.9rem; margin-bottom: 15px; display: none;"></p>
+                <button class="auth-btn" id="mfa-btn">Verify MFA Code <i class="fa-solid fa-key"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Platform Application Workspace -->
+    <div id="main-container">
+        <!-- Sidebar Navigation Dashboard -->
+        <aside>
+            <div class="aside-header">
+                <i class="fa-solid fa-cathedral" style="font-size: 1.8rem; color: var(--brushed-gold);"></i>
+                <h1>BASILICA</h1>
+            </div>
+
+            <ul class="nav-links">
+                <li><a class="nav-link active" data-view="dashboard-view"><i class="fa-solid fa-chart-line"></i> Editorial Dashboard</a></li>
+                <li><a class="nav-link" data-view="content-view"><i class="fa-solid fa-file-shield"></i> Approval Portal</a></li>
+                <li><a class="nav-link" data-view="preview-view"><i class="fa-solid fa-comments"></i> Sandbox Preview</a></li>
+                <li><a class="nav-link" data-view="audit-view"><i class="fa-solid fa-receipt"></i> System Audits</a></li>
+                <li><a class="nav-link" data-view="users-view"><i class="fa-solid fa-user-gear"></i> Admin Team</a></li>
+            </ul>
+
+            <div class="user-profile">
+                <div class="user-avatar" id="avatar-letters">SA</div>
+                <div class="user-info">
+                    <h4 id="user-display-name">Superadmin</h4>
+                    <span id="user-display-role">Super Administrator</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Workspace Focus Area -->
+        <main>
+            <div class="workspace-header">
+                <div>
+                    <h2 style="font-family: 'Playfair Display', serif; font-size: 1.8rem;" id="workspace-title">Editorial Dashboard</h2>
+                    <p class="breadcrumbs">Portal &gt; <span id="breadcrumb-focus">Dashboard</span></p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 25px;">
+                    <!-- Notifications Center -->
+                    <div class="notif-bell" onclick="toggleNotificationsModal()"><i class="fa-solid fa-bell"></i><span class="notif-count" id="notif-badge">0</span></div>
+                    <button class="btn-gold" id="logout-btn" style="background: rgba(255,255,255,0.05); color: var(--ivory); border: 1px solid var(--glass-border);"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
+            </div>
+
+            <!-- 1. Editorial Dashboard Panel -->
+            <div id="dashboard-view" class="view-panel active">
+                <div class="widget-grid">
+                    <div class="widget">
+                        <div class="widget-data">
+                            <h3>Awaiting Review</h3>
+                            <p id="widget-awaiting-review">0</p>
+                        </div>
+                        <i class="fa-solid fa-file-invoice widget-icon"></i>
+                    </div>
+                    <div class="widget">
+                        <div class="widget-data">
+                            <h3>Scheduled Posts</h3>
+                            <p id="widget-scheduled-count">0</p>
+                        </div>
+                        <i class="fa-solid fa-clock-rotate-left widget-icon"></i>
+                    </div>
+                    <div class="widget-data" style="background: var(--glass-bg); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--glass-border);">
+                        <div>
+                            <h3 style="font-size: 0.85rem; text-transform: uppercase; color: var(--brushed-gold);">System Synced</h3>
+                            <p style="font-size: 1.6rem; font-weight: bold; color: #28A745;"><i class="fa-solid fa-shield-check"></i> Connected</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h4 style="margin-bottom: 20px; font-family: 'Playfair Display', serif; color: var(--brushed-gold);">Live Traffic & Volumes</h4>
+                        <canvas id="traffic-chart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h4 style="margin-bottom: 20px; font-family: 'Playfair Display', serif; color: var(--brushed-gold);">Intent Proportions</h4>
+                        <canvas id="intent-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Content Governance Approval Portal -->
+            <div id="content-view" class="view-panel">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--brushed-gold);">Unified Content Registry</h3>
+                        <div style="display: flex; gap: 15px;">
+                            <select id="content-filter-category" class="input-field" style="max-width: 180px; background: rgba(0,0,0,0.3);">
+                                <option value="">All Categories</option>
+                                <option value="mass_schedule">Mass Schedule</option>
+                                <option value="confessions">Confessions</option>
+                                <option value="sacraments">Sacraments</option>
+                                <option value="events">Parish Events</option>
+                                <option value="announcements">Announcements</option>
+                                <option value="donations">Donations</option>
+                                <option value="contacts">Office Contacts</option>
+                                <option value="bulletins">Parish Bulletins</option>
+                                <option value="faqs">Frequently Asked Questions</option>
+                                <option value="emergency_notices">Emergency Notices</option>
+                                <option value="static_pages">Static Pages</option>
+                                <option value="knowledge_base">Knowledge Base Articles</option>
+                            </select>
+                            <button class="btn-gold" id="new-content-btn"><i class="fa-solid fa-plus"></i> Create Draft</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Version</th>
+                                    <th>Status</th>
+                                    <th>Owner</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="content-table-body">
+                                <!-- Populated dynamically by admin.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Integrated Live Chat Preview Sandbox -->
+            <div id="preview-view" class="view-panel">
+                <div class="preview-sandbox-grid">
+                    <div class="card-panel">
+                        <h3 style="font-family: 'Playfair Display', serif; color: var(--brushed-gold); margin-bottom: 15px;">Sandbox Preview Engine</h3>
+                        <p style="opacity: 0.8; margin-bottom: 25px; line-height: 1.5;">Test unpublished content changes securely. Standard parishioner chatbots do not have access to drafts, but this simulator queries drafts immediately when `preview_drafts=true` is requested.</p>
+                        
+                        <div class="input-group">
+                            <label>Draft / Pending Items Available for Lookup</label>
+                            <ul id="sandbox-draft-availables" style="list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+                                <!-- Auto populated -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Simulated mobile mockup -->
+                    <div class="chat-phone-mockup">
+                        <div class="chat-mockup-header">
+                            <h4 style="font-size: 1rem; color: var(--brushed-gold); font-weight: 600;"><i class="fa-solid fa-comments"></i> BASILICA Sandbox Preview</h4>
+                            <span style="font-size: 0.75rem; opacity: 0.7;">Secure admin session</span>
+                        </div>
+                        <div class="chat-mockup-body" id="sandbox-chat-body">
+                            <div class="chat-bubble bubble-bot">Peace be with you! I'm BASILICA, your parish assistant. Ask me anything, and I'll resolve it using approved content or unpublished draft states.</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); border-top: 1px solid var(--glass-border); padding: 15px; display: flex; gap: 10px;">
+                            <input type="text" id="sandbox-chat-input" class="input-field" placeholder="Ask about draft schedules..." style="border-radius: 20px;">
+                            <button class="btn-gold" id="sandbox-send-btn" style="border-radius: 50%; padding: 12px; height: 42px; width: 42px; justify-content: center;"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. System Audit Log -->
+            <div id="audit-view" class="view-panel">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--brushed-gold);">System Audit Log</h3>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Session ID</th>
+                                    <th>Intent</th>
+                                    <th>Confidence</th>
+                                    <th>Latency</th>
+                                    <th>Source</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. User Settings & Access Management Panel -->
+            <div id="users-view" class="view-panel">
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--brushed-gold);">Administrative Team</h3>
+                        <button class="btn-gold" id="new-user-btn"><i class="fa-solid fa-user-plus"></i> Invite Team Member</button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>MFA Status</th>
+                                    <th>Created On</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Content Editor & Governance Workflow Modal Gateway -->
+    <div class="modal" id="content-modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="font-family: 'Playfair Display', serif; color: var(--brushed-gold);" id="modal-content-title">Edit Draft Content</h3>
+                <span id="editor-autosave-indicator" style="font-size: 0.8rem; color: var(--brushed-gold); font-style: italic;">Auto-saved locally</span>
+            </div>
+            
+            <form id="content-form">
+                <input type="hidden" id="editor-id">
+                <div class="input-group">
+                    <label for="editor-title">Item Title / Intent Matching</label>
+                    <input type="text" id="editor-title" class="input-field" required placeholder="e.g. Ruiru Youth Group Mass">
+                </div>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="editor-category">Category</label>
+                        <select id="editor-category" class="input-field">
+                            <option value="mass_schedule">Mass Schedule</option>
+                            <option value="confessions">Confessions</option>
+                            <option value="sacraments">Sacraments</option>
+                            <option value="events">Parish Events</option>
+                            <option value="announcements">Announcements</option>
+                            <option value="donations">Donations</option>
+                            <option value="contacts">Office Contacts</option>
+                            <option value="bulletins">Parish Bulletins</option>
+                            <option value="faqs">Frequently Asked Questions</option>
+                            <option value="emergency_notices">Emergency Notices</option>
+                            <option value="static_pages">Static Pages</option>
+                            <option value="knowledge_base">Knowledge Base Articles</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="editor-status">Current Status</label>
+                        <select id="editor-status" class="input-field" disabled style="opacity: 0.8; background: rgba(0,0,0,0.3);">
+                            <option value="Draft">Draft</option>
+                            <option value="Pending Review">Pending Review</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Published">Published</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Structured Dynamic Fields Container -->
+                <div id="dynamic-fields-container" style="border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; background: rgba(0,0,0,0.2); margin-bottom: 20px;">
+                    <!-- Structured form inputs reactively rendered depend on category -->
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="editor-scheduled">Future Scheduled Publishing Date (Optional)</label>
+                        <input type="datetime-local" id="editor-scheduled" class="input-field">
+                    </div>
+                    <div class="input-group">
+                        <label for="editor-expiry">Auto-Archive Expiration Date (Optional)</label>
+                        <input type="datetime-local" id="editor-expiry" class="input-field">
+                    </div>
+                </div>
+
+                <!-- Content Validation Warning Center -->
+                <div id="validation-warning-panel" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #EF4444; border-radius: 12px; padding: 15px; margin-bottom: 20px; display: none;">
+                    <h5 style="color: #EF4444; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px;"><i class="fa-solid fa-triangle-exclamation"></i> Content Validation Failed</h5>
+                    <ul id="validation-warning-list" style="list-style: inside; font-size: 0.85rem; opacity: 0.9;"></ul>
+                </div>
+
+                <!-- AI Draft Writing Assist Panel -->
+                <div style="background: rgba(212,175,55,0.05); border: 1px dashed var(--brushed-gold); border-radius: 12px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h5 style="color: var(--brushed-gold); font-size: 0.95rem; font-weight: 600;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Drafting Assistant</h5>
+                        <p style="font-size: 0.8rem; opacity: 0.8;">Grammar checking and copywriting suggestion helper tool.</p>
+                    </div>
+                    <button type="button" class="btn-gold" id="ai-assist-btn" style="padding: 6px 14px; font-size: 0.85rem;">Draft with AI</button>
+                </div>
+
+                <!-- Threaded Discussion Commentary Section -->
+                <div class="comment-thread" id="editor-commentary-root" style="display: none;">
+                    <h5 style="color: var(--brushed-gold); font-size: 1rem; margin-bottom: 12px;"><i class="fa-solid fa-comments"></i> Governance Commentary Thread</h5>
+                    <div id="editor-comments-list" style="margin-bottom: 15px; max-height: 150px; overflow-y: auto;"></div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="editor-add-comment-input" class="input-field" placeholder="Leave review feedback or change comment...">
+                        <button type="button" class="btn-gold" id="editor-add-comment-btn" style="padding: 10px 15px;"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px;">
+                    <button type="button" class="btn-gold" style="background: rgba(255,255,255,0.05); color: var(--ivory); border: 1px solid var(--glass-border);" onclick="closeContentModal()">Cancel</button>
+                    <button type="button" class="btn-gold" id="editor-submit-review-btn" style="background: #FFC107; color: #000;">Submit for Review</button>
+                    <button type="button" class="btn-gold" id="editor-approve-btn" style="background: #28A745; color: white;">Approve & Live</button>
+                    <button type="button" class="btn-gold" id="editor-reject-btn" style="background: #DC3545; color: white;">Reject Back to Draft</button>
+                    <button type="submit" class="btn-gold">Save & Version</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notifications Center Modal -->
+    <div class="modal" id="notif-modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="font-family: 'Playfair Display', serif; color: var(--brushed-gold);"><i class="fa-solid fa-bell"></i> System Alert Center</h3>
+                <button class="btn-gold" style="padding: 4px 10px; font-size: 0.8rem;" onclick="document.getElementById('notif-modal').style.display='none'">Close</button>
+            </div>
+            <ul id="notifications-modal-list" style="list-style: none; display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto;">
+                <!-- Populate dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Admin Member Creation Modal -->
+    <div class="modal" id="user-modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <h3 style="font-family: 'Playfair Display', serif; color: var(--brushed-gold); margin-bottom: 25px;">Invite Member</h3>
+            <form id="user-form">
+                <div class="input-group">
+                    <label for="user-username">Username</label>
+                    <input type="text" id="user-username" class="input-field" required placeholder="Enter login username">
+                </div>
+                <div class="input-group">
+                    <label for="user-password">Temporary Password</label>
+                    <input type="password" id="user-password" class="input-field" required placeholder="••••••••">
+                </div>
+                <div class="input-group">
+                    <label for="user-role">Assigned Governance Role</label>
+                    <select id="user-role" class="input-field">
+                        <option value="Super Administrator">Super Administrator</option>
+                        <option value="Parish Administrator">Parish Administrator</option>
+                        <option value="Priest">Priest (Sacramental Reviewer)</option>
+                        <option value="Secretary">Secretary (Draft Creator)</option>
+                        <option value="Ministry Leader">Ministry Leader (Edit only)</option>
+                        <option value="Read Only">Read Only</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px;">
+                    <button type="button" class="btn-gold" style="background: rgba(255,255,255,0.05); color: var(--ivory); border: 1px solid var(--glass-border);" onclick="document.getElementById('user-modal').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn-gold">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load Client Logic script -->
+    <script src="admin.js" defer></script>
+</body>
+</html>

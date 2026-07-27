@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BASILICA — Premium Parish Conversational Assistant for Mass times, sacraments, events, and donations.">
+  <title>BASILICA — Parish Assistant</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span class="icon-church" aria-hidden="true">⛪</span>
+        <div class="header-text">
+          <h1>BASILICA</h1>
+          <p>St. Joseph's Parish Assistant</p>
+        </div>
+      </div>
+      
+      <!-- Actions (Theme Toggle & Reset) -->
+      <div class="header-actions">
+        <button id="resetSessionBtn" class="action-btn" title="Reset Conversation" aria-label="Reset Conversation">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><polyline points="23 4 23 10 18 10"></polyline><polyline points="1 20 1 14 6 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        </button>
+        <button id="themeToggleBtn" class="action-btn" title="Toggle Theme" aria-label="Toggle Theme">
+          <svg id="themeMoonIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg id="themeSunIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Server Warm-up Status Banner -->
+    <div class="status-banner" id="statusBanner" role="alert">
+      <span class="pulse-indicator"></span>
+      Waking up the server — first reply may take up to a minute...
+    </div>
+
+    <!-- Chat Area -->
+    <main class="chat-area" id="chatArea" aria-label="Chat messages log">
+      <div class="message-bubble bot-message">
+        <div class="bubble-content">
+          <p>Peace be with you! I'm <strong>BASILICA</strong>, your parish assistant. Ask me about Mass times, baptisms, confession, events, donations, or anything else about our parish.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Interactive suggestions chips -->
+    <section class="suggestions-section" aria-label="Suggested Questions">
+      <button class="chip-btn" onclick="askQuestion('What time is Sunday Mass?')">⛪ Mass times</button>
+      <button class="chip-btn" onclick="askQuestion('How do I book a baptism?')">👶 Baptism</button>
+      <button class="chip-btn" onclick="askQuestion('When is confession?')">🙏 Confession</button>
+      <button class="chip-btn" onclick="askQuestion('How do I donate via M-Pesa?')">💸 Donate</button>
+    </section>
+
+    <!-- Input Form Footer -->
+    <footer class="app-footer">
+      <form id="chatForm">
+        <input type="text" id="questionInput" placeholder="Type your question in English or Swahili..." autocomplete="off" required aria-label="Type your parish question" />
+        <button type="submit" id="sendBtn" aria-label="Send message">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+    </footer>
+
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+  </div>
+
+  <!-- JS Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
